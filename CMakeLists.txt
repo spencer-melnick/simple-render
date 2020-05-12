@@ -46,7 +46,10 @@ endif()
 
 # Add sources
 target_include_directories(simple-render PRIVATE src)
-target_sources(simple-render PRIVATE src/rendering/instance.cpp)
+target_sources(simple-render PRIVATE
+	src/rendering/context.cpp
+	src/rendering/instance.cpp
+)
 
 
 # Link packages

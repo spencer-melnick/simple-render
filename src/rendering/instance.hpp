@@ -13,18 +13,19 @@ namespace vk
 
 namespace Rendering
 {
+    class Context;
+
     class Instance
     {
-        public:
-            static Instance& get();
-
+        friend class Context;
+        
         protected:
-            vk::Instance& getVulkanInstance() const;
-
-        private:
             Instance();
             ~Instance();
 
+            vk::Instance& getVulkanInstance() const;
+
+        private:
             // Initialization steps
             void initializeSdl();
             void initializeVulkan();

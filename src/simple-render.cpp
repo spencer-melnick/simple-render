@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include "rendering/instance.hpp"
+#include "rendering/context.hpp"
 
 int main()
 {
@@ -28,7 +28,7 @@ int main()
 SimpleRenderApp::SimpleRenderApp()
 {
     initializeLogger();
-    Rendering::Instance::get();
+    Rendering::Context::get();
 }
 
 SimpleRenderApp::~SimpleRenderApp()

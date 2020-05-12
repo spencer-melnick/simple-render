@@ -13,17 +13,6 @@
 
 namespace Rendering
 {
-    Instance& Instance::get()
-    {
-        static Instance instance;
-        return instance;
-    }
-
-    vk::Instance& Instance::getVulkanInstance() const
-    {
-        return *m_vulkanInstance;
-    }
-
     Instance::Instance()
     {
         m_vulkanInstance = new vk::Instance(nullptr);
@@ -43,6 +32,11 @@ namespace Rendering
 
         spdlog::info("Quitting SDL");
         SDL_Quit();
+    }
+
+    vk::Instance& Instance::getVulkanInstance() const
+    {
+        return *m_vulkanInstance;
     }
 
     void Instance::initializeSdl()
