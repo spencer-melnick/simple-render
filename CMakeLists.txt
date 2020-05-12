@@ -27,6 +27,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release)
 find_package(SDL2 2.0.6 REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(fmt REQUIRED)
+find_package(spdlog REQUIRED)
 
 
 # Setup executable target
@@ -52,6 +53,7 @@ target_include_directories(simple-render PRIVATE src)
 target_link_libraries(simple-render PRIVATE SDL2::SDL2)
 target_link_libraries(simple-render PRIVATE Vulkan::Vulkan)
 target_link_libraries(simple-render PRIVATE fmt::fmt)
+target_link_libraries(simple-render PRIVATE spdlog::spdlog)
 
 
 if (WIN32)

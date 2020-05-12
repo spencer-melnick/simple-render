@@ -12,6 +12,7 @@ A simple Vulkan renderer I'm working on to gain more experience with low-level g
 - Libraries
     - [SDL2](https://www.libsdl.org/)
     - [fmt](https://github.com/fmtlib/fmt)
+    - [spdlog](https://github.com/gabime/spdlog)
 
 ### Windows
 - [vcpkg (Recommended)](https://github.com/microsoft/vcpkg)
@@ -25,7 +26,7 @@ A simple Vulkan renderer I'm working on to gain more experience with low-level g
 - (Optional) Install vcpkg according to the instruction on its [Github page](https://github.com/microsoft/vcpkg)
 - (Optional) set your `VCPKG_ROOT` directory
 - Install the required libraries
-    - If you've set up vcpkg, you can grab all the libraries by running `.\vcpkg install sdl2 vulkan fmt` in your vcpkg folder
+    - If you've set up vcpkg, you can grab all the libraries by running `.\vcpkg install sdl2[vulkan] vulkan fmt spdlog` in your vcpkg folder
 - Configure and build
     - Currently I am using the [CMake Tools](https://github.com/microsoft/vscode-cmake-tools) extension for [VSCode](https://code.visualstudio.com/), but any IDE or modern compiler should work
 
