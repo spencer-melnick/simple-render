@@ -46,12 +46,13 @@ endif()
 
 # Add sources
 target_include_directories(simple-render PRIVATE src)
-# target_sources(simple-render PRIVATE)
+target_sources(simple-render PRIVATE src/rendering/instance.cpp)
 
 
 # Link packages
 target_link_libraries(simple-render PRIVATE SDL2::SDL2)
 target_link_libraries(simple-render PRIVATE Vulkan::Vulkan)
+target_include_directories(simple-render PRIVATE Vulkan::Vulkan)
 target_link_libraries(simple-render PRIVATE fmt::fmt)
 target_link_libraries(simple-render PRIVATE spdlog::spdlog)
 

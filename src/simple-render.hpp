@@ -13,18 +13,13 @@ class SimpleRenderApp
         SimpleRenderApp();
         ~SimpleRenderApp();
 
-        void initialize();
         void loop();
-        void destroy();
 
     private:
         // Initialization steps
-        bool initializeLogger();
-        bool initializeSDL();
-        bool initializeVulkan();
+        void initializeLogger();
 
 
         bool m_isRunning = false;
         std::shared_ptr<class spdlog::logger> m_mainLogger;
-        vk::Instance m_vulkanInstance;
 };
