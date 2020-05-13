@@ -47,6 +47,7 @@ endif()
 # Add sources
 target_include_directories(simple-render PRIVATE src)
 target_sources(simple-render PRIVATE
+	src/rendering/device.cpp
 	src/rendering/context.cpp
 	src/rendering/instance.cpp
 )

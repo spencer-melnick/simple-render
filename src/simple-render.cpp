@@ -52,6 +52,6 @@ void SimpleRenderApp::initializeLogger()
     spdlog::set_level(spdlog::level::trace);
 
     // Set up a basic logger (don't handle exceptions - main will get those)
-    auto defaultLogger = spdlog::basic_logger_mt("default_logger", "log.txt");
+    auto defaultLogger = spdlog::basic_logger_mt("default_logger", "log.txt", true);
     spdlog::set_default_logger(defaultLogger);
 }

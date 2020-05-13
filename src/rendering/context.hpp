@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.hpp>
 
 #include "instance.hpp"
+#include "device.hpp"
 
 namespace Rendering
 {
