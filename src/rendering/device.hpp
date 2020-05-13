@@ -61,7 +61,12 @@ namespace Rendering
                 return *m_device;
             }
 
+            vk::Queue& getGraphicsQueue() {
+                return m_graphicsQueue;
+            }
+
         private:
             vk::UniqueDevice m_device;
+            vk::Queue m_graphicsQueue;
     };
 }

@@ -94,5 +94,8 @@ namespace Rendering
             spdlog::error("Failed to create Vulkan device: {}", exception.what());
             throw exception;
         }
+
+        spdlog::info("Aquiring graphics queue");
+        m_graphicsQueue = m_device->getQueue(properties.getGraphicsQueue().value(), 0);
     }
 }
