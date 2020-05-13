@@ -36,3 +36,6 @@ build
 
 # Default executable directory
 bin
+
+# Default log file
+log.txt
