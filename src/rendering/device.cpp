@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "instance.hpp"
+
 namespace Rendering
 {
     DeviceProperties::DeviceProperties(const vk::PhysicalDevice& physicalDevice) :
@@ -66,5 +68,31 @@ namespace Rendering
 
         // Sort by total heap size
         return a.getTotalHeapSize() > b.getTotalHeapSize();
+    }
+
+    Device::Device(const DeviceProperties& properties)
+    {
+        float defaultQueuePriority = 1.0f;
+        std::vector<vk::DeviceQueueCreateInfo> queueCreateInfo;
+
+        // Add a request for a graphics queue
+        queueCreateInfo.push_back(vk::DeviceQueueCreateInfo{{}, properties.getGraphicsQueue().value(), 1, &defaultQueuePriority});
+
+        // Populate our device info with all requested queues
+        vk::DeviceCreateInfo createInfo;
+        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfo.size());
+        createInfo.pQueueCreateInfos = queueCreateInfo.data();
+
+        // Create the device with exception handling
+        spdlog::info("Creating Vulkan device for {}", properties.getDeviceProperties().deviceName);
+        try
+        {
+            m_device = properties.getPhysicalDevice().createDeviceUnique(createInfo);
+        }
+        catch (const std::exception& exception)
+        {
+            spdlog::error("Failed to create Vulkan device: {}", exception.what());
+            throw exception;
+        }
     }
 }

@@ -51,9 +51,17 @@ namespace Rendering
     bool operator<(const DeviceProperties& a, const DeviceProperties& b);
 
 
+    // Simple wrapper for a logical Vulkan device
     class Device
     {
         public:
-            Device() = default;
+            Device(const DeviceProperties& properties);
+
+            const vk::Device& getVulkanDevice() const {
+                return *m_device;
+            }
+
+        private:
+            vk::UniqueDevice m_device;
     };
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <vulkan/vulkan.hpp>
 
 #include "instance.hpp"
@@ -14,7 +16,9 @@ namespace Rendering
         public:
             static Context& get();
 
-            Instance& getInstance();
+            Device& getDevice() {
+                return m_device.value();
+            }
         
         private:
             Context();
@@ -22,5 +26,7 @@ namespace Rendering
 
             // Initialization steps
             void chooseDevice();
+
+            std::optional<Device> m_device;
     };
 }

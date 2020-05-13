@@ -216,7 +216,11 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
             break;
         
         case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo:
-            spdlog::info("Vulkan: {}", pCallbackData->pMessage);
+            if (static_cast<vk::DebugUtilsMessageTypeFlagBitsEXT>(messageType)
+                != vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral)
+            {
+                spdlog::debug("Vulkan: {}", pCallbackData->pMessage);
+            }
             break;
 
         case vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning:

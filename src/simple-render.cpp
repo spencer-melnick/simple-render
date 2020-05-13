@@ -16,6 +16,7 @@ int main()
     }
     catch (const std::exception& exception)
     {
+        spdlog::error("Fatal exception: {}", exception.what());
         std::cout << exception.what() << std::endl;
         return 1;
     }
