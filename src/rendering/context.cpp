@@ -1,5 +1,7 @@
 #include "context.hpp"
 
+#include <spdlog/spdlog.h>
+
 namespace Rendering
 {
     Context& Context::get()
@@ -8,19 +10,16 @@ namespace Rendering
         return context;
     }
 
-    Instance& Context::getInstance()
-    {
-        return m_instance;
-    }
-
 
     Context::Context()
     {
-
+        // Ensure that the instance is always created before the context
+        // as the context depends on the instance existing
+        Instance::get();
     }
 
     Context::~Context()
     {
-
+        spdlog::debug("Context destroyed");
     }
 }

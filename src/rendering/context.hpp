@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
+
 #include "instance.hpp"
 
 namespace Rendering
@@ -17,8 +19,7 @@ namespace Rendering
             Context();
             ~Context();
 
-            // Order matters - these members will be constructed in this order,
-            // and destroyed in the inverse order
-            Instance m_instance;
+            // Initialization steps
+            void chooseDevice();
     };
 }

@@ -25,6 +25,22 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 namespace Rendering
 {
+    // Public
+    Instance& Instance::get()
+    {
+        static Instance instance;
+        return instance;
+    }
+
+
+    // Protected
+    const vk::Instance& Instance::getVulkanInstance() const
+    {
+        return *m_vulkanInstance;
+    }
+
+
+    // Private
     Instance::Instance()
     {
         initializeSdl();
@@ -39,11 +55,6 @@ namespace Rendering
     {
         spdlog::info("Quitting SDL");
         SDL_Quit();
-    }
-
-    const vk::Instance& Instance::getVulkanInstance() const
-    {
-        return *m_vulkanInstance;
     }
 
     void Instance::initializeSdl()

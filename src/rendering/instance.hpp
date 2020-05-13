@@ -13,13 +13,16 @@ namespace Rendering
     {
         friend class Context;
 
-        protected:
-            Instance();
-            ~Instance();
+        public:
+            static Instance& get();
 
+        protected:
             const vk::Instance& getVulkanInstance() const;
 
         private:
+            Instance();
+            ~Instance();
+
             // Initialization steps
             void initializeSdl();
             void initializeVulkan();

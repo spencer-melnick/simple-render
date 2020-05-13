@@ -28,6 +28,7 @@ int main()
 SimpleRenderApp::SimpleRenderApp()
 {
     initializeLogger();
+    Rendering::Instance::get();
     Rendering::Context::get();
 }
 
