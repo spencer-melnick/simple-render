@@ -61,7 +61,7 @@ target_link_libraries(simple-render PRIVATE spdlog::spdlog)
 
 
 # Enable Vulkan-Hpp default dynamic loader
-target_compile_definitions(simple-render PRIVATE VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1)
+target_compile_definitions(simple-render PRIVATE VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
 
 if (WIN32)
