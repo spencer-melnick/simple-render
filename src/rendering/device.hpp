@@ -1,11 +1,14 @@
 #pragma once
 
 #include <optional>
+#include <vector>
 
 #include <vulkan/vulkan.hpp>
 
 namespace Rendering
 {
+    extern std::vector<const char*> requiredDeviceExtensions;
+
     // Queries and stores Vulkan physical device properties in addition
     // to computing some metrics for determining optimal device
     // and feature support
@@ -32,6 +35,9 @@ namespace Rendering
             auto getQueueProperties() const {
                 return m_queueProperties;
             }
+            auto getExtensionProperties() const {
+                return m_extensionProperties;
+            }
             auto getGraphicsQueue() const {
                 return m_graphicsQueue.value();
             }
@@ -48,6 +54,7 @@ namespace Rendering
             vk::PhysicalDeviceMemoryProperties m_memoryProperties;
             vk::DeviceSize m_totalHeapSize;
             std::vector<vk::QueueFamilyProperties> m_queueProperties;
+            std::vector<vk::ExtensionProperties> m_extensionProperties;
             std::optional<uint32_t> m_graphicsQueue;
             std::optional<uint32_t> m_presentationQueue;
     };

@@ -1,6 +1,7 @@
 #include "device.hpp"
 
 #include <set>
+#include <string_view>
 
 #include <spdlog/spdlog.h>
 
@@ -8,6 +9,10 @@
 
 namespace Rendering
 {
+    std::vector<const char*> requiredDeviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
     DeviceProperties::DeviceProperties(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface) :
         m_physicalDevice(physicalDevice), m_totalHeapSize(0)
     {
@@ -15,6 +20,7 @@ namespace Rendering
         m_deviceProperties = m_physicalDevice.getProperties();
         m_memoryProperties = m_physicalDevice.getMemoryProperties();
         m_queueProperties = m_physicalDevice.getQueueFamilyProperties();
+        m_extensionProperties = m_physicalDevice.enumerateDeviceExtensionProperties();
 
         // Calculate total heap size
         for (uint32_t i = 0; i < m_memoryProperties.memoryHeapCount; i ++)
@@ -58,6 +64,27 @@ namespace Rendering
         if (!m_graphicsQueue.has_value() || !m_presentationQueue.has_value())
         {
             return false;
+        }
+
+        // Check if our device has all of the required extensions
+        for (auto& i : requiredDeviceExtensions)
+        {
+            bool wasExtensionFound = false;
+            std::string_view extensionName(i);
+
+            for (auto& j : m_extensionProperties)
+            {
+                if (j.extensionName == extensionName)
+                {
+                    wasExtensionFound = true;
+                    break;
+                }
+            }
+
+            if (!wasExtensionFound)
+            {
+                return false;
+            }
         }
 
         return true;
@@ -106,6 +133,10 @@ namespace Rendering
         vk::DeviceCreateInfo createInfo;
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfo.size());
         createInfo.pQueueCreateInfos = queueCreateInfo.data();
+
+        // Add all required device extensions
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredDeviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = requiredDeviceExtensions.data();
 
         // Create the device with exception handling
         spdlog::info("Creating Vulkan device for {}", properties.getDeviceProperties().deviceName);

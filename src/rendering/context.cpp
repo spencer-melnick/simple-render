@@ -18,6 +18,9 @@ namespace Rendering
         // Ensure that the instance is always created before the context
         // as the context depends on the instance existing
         Instance::get();
+
+        // We also need to create a window to get a Vulkan surface
+        // and determine which devices support that surface
         m_window.emplace(800, 600);
         chooseDevice();
     }
