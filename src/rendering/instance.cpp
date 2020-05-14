@@ -60,7 +60,7 @@ namespace Rendering
     void Instance::initializeSdl()
     {
         spdlog::info("Intializing SDL");
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0)
         {
             spdlog::error("SDL failed to initialize: {}", SDL_GetError());
             throw std::exception("SDL initialization failure");

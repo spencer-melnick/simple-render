@@ -7,16 +7,12 @@
 
 namespace Rendering
 {
-    class Context;
 
     class Instance
     {
-        friend class Context;
 
         public:
             static Instance& get();
-
-        protected:
             const vk::Instance& getVulkanInstance() const;
 
         private:

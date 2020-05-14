@@ -13,6 +13,7 @@ int main()
     try
     {
         SimpleRenderApp application;
+        application.loop();
     }
     catch (const std::exception& exception)
     {
@@ -31,6 +32,9 @@ SimpleRenderApp::SimpleRenderApp()
     initializeLogger();
     Rendering::Instance::get();
     Rendering::Context::get();
+
+    m_window.emplace(800, 600);
+    m_isRunning = true;
 }
 
 SimpleRenderApp::~SimpleRenderApp()
@@ -40,10 +44,23 @@ SimpleRenderApp::~SimpleRenderApp()
 
 void SimpleRenderApp::loop()
 {
-    // while (m_isRunning)
-    // {
+    SDL_Event event;
 
-    // }
+    while (m_isRunning)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+                case SDL_EventType::SDL_QUIT:
+                    m_isRunning = false;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 

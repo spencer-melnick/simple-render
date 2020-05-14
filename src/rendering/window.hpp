@@ -1,10 +1,18 @@
 #pragma once
 
-class Window
+#include <SDL2/SDL.h>
+#include <vulkan/vulkan.hpp>
+
+namespace Rendering
 {
-    public:
+    class Window
+    {
+        public:
+            Window(int width, int height);
+            ~Window();
 
-
-    private:
-
-};
+        private:
+            SDL_Window* m_window;
+            vk::SurfaceKHR m_surface;
+    };
+}
