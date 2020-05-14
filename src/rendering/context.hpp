@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.hpp>
 
 #include "instance.hpp"
+#include "window.hpp"
 #include "device.hpp"
 
 namespace Rendering
@@ -19,6 +20,9 @@ namespace Rendering
             Device& getDevice() {
                 return m_device.value();
             }
+            Window& getWindow() {
+                return m_window.value();
+            }
         
         private:
             Context();
@@ -27,6 +31,7 @@ namespace Rendering
             // Initialization steps
             void chooseDevice();
 
+            std::optional<Window> m_window;
             std::optional<Device> m_device;
     };
 }

@@ -12,7 +12,8 @@ namespace Rendering
     class DeviceProperties
     {
         public:
-            DeviceProperties(const vk::PhysicalDevice& physicalDevice);
+            DeviceProperties(const vk::PhysicalDevice& physicalDevice,
+                const vk::SurfaceKHR& surface);
 
 
             // Getters
@@ -32,7 +33,10 @@ namespace Rendering
                 return m_queueProperties;
             }
             auto getGraphicsQueue() const {
-                return m_graphicsQueue;
+                return m_graphicsQueue.value();
+            }
+            auto getPresentationQueue() const {
+                return m_presentationQueue.value();
             }
 
             bool getSupportsRequiredFeatures() const;
@@ -45,6 +49,7 @@ namespace Rendering
             vk::DeviceSize m_totalHeapSize;
             std::vector<vk::QueueFamilyProperties> m_queueProperties;
             std::optional<uint32_t> m_graphicsQueue;
+            std::optional<uint32_t> m_presentationQueue;
     };
 
     // Sort operator
@@ -56,17 +61,21 @@ namespace Rendering
     {
         public:
             Device(const DeviceProperties& properties);
+            ~Device();
 
             const vk::Device& getVulkanDevice() const {
                 return *m_device;
             }
-
             vk::Queue& getGraphicsQueue() {
                 return m_graphicsQueue;
+            }
+            vk::Queue& getPresentationQueue() {
+                return m_presentationQueue;
             }
 
         private:
             vk::UniqueDevice m_device;
             vk::Queue m_graphicsQueue;
+            vk::Queue m_presentationQueue;
     };
 }

@@ -1,12 +1,14 @@
 #include "device.hpp"
 
+#include <set>
+
 #include <spdlog/spdlog.h>
 
 #include "instance.hpp"
 
 namespace Rendering
 {
-    DeviceProperties::DeviceProperties(const vk::PhysicalDevice& physicalDevice) :
+    DeviceProperties::DeviceProperties(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface) :
         m_physicalDevice(physicalDevice), m_totalHeapSize(0)
     {
         // Query main property structures
@@ -27,8 +29,7 @@ namespace Rendering
             spdlog::debug("\t{} queues - {} flags", i.queueCount, static_cast<uint32_t>(i.queueFlags));
         }
 
-        // Find the needed queue families
-        // Right now we just need a single graphics queue
+        // Find the first available graphics queue family
         for (size_t i = 0; i < m_queueProperties.size(); i++)
         {
             if (m_queueProperties[i].queueFlags & vk::QueueFlagBits::eGraphics)
@@ -38,12 +39,23 @@ namespace Rendering
                 break;
             }
         }
+
+        // Find the first available presentation queue family
+        for (size_t i = 0; i < m_queueProperties.size(); i++)
+        {
+            if (m_physicalDevice.getSurfaceSupportKHR(static_cast<uint32_t>(i), surface))
+            {
+                spdlog::debug("\tPresentation queue selected at index {}", i);
+                m_presentationQueue = static_cast<uint32_t>(i);
+                break;
+            }
+        }
     }
 
     bool DeviceProperties::getSupportsRequiredFeatures() const
     {
         // Check if we have a supported graphics queue
-        if (!m_graphicsQueue.has_value())
+        if (!m_graphicsQueue.has_value() || !m_presentationQueue.has_value())
         {
             return false;
         }
@@ -72,11 +84,23 @@ namespace Rendering
 
     Device::Device(const DeviceProperties& properties)
     {
+        if (!properties.getSupportsRequiredFeatures())
+        {
+            spdlog::error("Cannot create logical device for {} - does not support required features",
+                properties.getDeviceProperties().deviceName);
+            throw std::exception("Physical device does not support required Vulkan features");
+        }
+
         float defaultQueuePriority = 1.0f;
         std::vector<vk::DeviceQueueCreateInfo> queueCreateInfo;
 
-        // Add a request for a graphics queue
-        queueCreateInfo.push_back(vk::DeviceQueueCreateInfo{{}, properties.getGraphicsQueue().value(), 1, &defaultQueuePriority});
+        // Add a request for graphics and presentation queues
+        std::set<uint32_t> requestedQueueFamilies = {properties.getGraphicsQueue(), properties.getPresentationQueue()};
+
+        for (auto& i : requestedQueueFamilies)
+        {
+            queueCreateInfo.push_back(vk::DeviceQueueCreateInfo{{}, properties.getGraphicsQueue(), 1, &defaultQueuePriority});
+        }
 
         // Populate our device info with all requested queues
         vk::DeviceCreateInfo createInfo;
@@ -95,7 +119,13 @@ namespace Rendering
             throw exception;
         }
 
-        spdlog::info("Aquiring graphics queue");
-        m_graphicsQueue = m_device->getQueue(properties.getGraphicsQueue().value(), 0);
+        spdlog::info("Aquiring queues");
+        m_graphicsQueue = m_device->getQueue(properties.getGraphicsQueue(), 0);
+        m_presentationQueue = m_device->getQueue(properties.getPresentationQueue(), 0);
+    }
+
+    Device::~Device()
+    {
+        spdlog::info("Destroying Vulkan logical device");
     }
 }

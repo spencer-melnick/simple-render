@@ -18,13 +18,13 @@ namespace Rendering
         // Ensure that the instance is always created before the context
         // as the context depends on the instance existing
         Instance::get();
-
+        m_window.emplace(800, 600);
         chooseDevice();
     }
 
     Context::~Context()
     {
-        spdlog::debug("Context destroyed");
+        spdlog::info("Destroying context");
     }
 
     void Context::chooseDevice()
@@ -44,7 +44,7 @@ namespace Rendering
         deviceProperties.reserve(physicalDevices.size());
         for (auto& i : physicalDevices)
         {
-            deviceProperties.emplace_back(i);
+            deviceProperties.emplace_back(i, m_window->getSurface());
         }
 
         // Remove devices that don't support required features

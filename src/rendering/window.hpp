@@ -5,11 +5,20 @@
 
 namespace Rendering
 {
+    class Context;
+
     class Window
     {
         public:
             Window(int width, int height);
-            ~Window();
+            ~Window() noexcept;
+
+            SDL_Window* getSdlWindow() {
+                return m_window;
+            }
+            vk::SurfaceKHR& getSurface() {
+                return m_surface;
+            }
 
         private:
             SDL_Window* m_window;

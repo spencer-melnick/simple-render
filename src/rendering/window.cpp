@@ -40,9 +40,11 @@ namespace Rendering
     Window::~Window()
     {
         // We need to destroy the surface before our window
+        spdlog::info("Destroying Vulkan surface");
         Instance::get().getVulkanInstance().destroySurfaceKHR(m_surface);
 
         spdlog::info("Destroying window");
         SDL_DestroyWindow(m_window);
     }
+
 }

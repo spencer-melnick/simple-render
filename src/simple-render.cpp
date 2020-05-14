@@ -33,7 +33,6 @@ SimpleRenderApp::SimpleRenderApp()
     Rendering::Instance::get();
     Rendering::Context::get();
 
-    m_window.emplace(800, 600);
     m_isRunning = true;
 }
 
