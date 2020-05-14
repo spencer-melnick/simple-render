@@ -72,7 +72,7 @@ namespace Rendering
             spdlog::debug("\t{}", i.getDeviceProperties().deviceName);
         }
 
-        m_device.emplace(*deviceProperties.begin());
+        m_device.emplace(std::move(deviceProperties.front()));
         VULKAN_HPP_DEFAULT_DISPATCHER.init(m_device->getVulkanDevice());
     }
 }

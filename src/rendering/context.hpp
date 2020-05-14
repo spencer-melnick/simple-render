@@ -7,6 +7,7 @@
 #include "instance.hpp"
 #include "window.hpp"
 #include "device.hpp"
+#include "swapchain.hpp"
 
 namespace Rendering
 {

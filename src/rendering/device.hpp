@@ -8,6 +8,7 @@
 namespace Rendering
 {
     extern std::vector<const char*> requiredDeviceExtensions;
+    extern vk::Format defaultSurfaceColorFormat;
 
     // Queries and stores Vulkan physical device properties in addition
     // to computing some metrics for determining optimal device
@@ -55,6 +56,8 @@ namespace Rendering
             vk::DeviceSize m_totalHeapSize;
             std::vector<vk::QueueFamilyProperties> m_queueProperties;
             std::vector<vk::ExtensionProperties> m_extensionProperties;
+            std::vector<vk::SurfaceFormatKHR> m_surfaceFormats;
+            std::vector<vk::PresentModeKHR> m_presentModes;
             std::optional<uint32_t> m_graphicsQueue;
             std::optional<uint32_t> m_presentationQueue;
     };
@@ -67,9 +70,12 @@ namespace Rendering
     class Device
     {
         public:
-            Device(const DeviceProperties& properties);
+            Device(DeviceProperties&& properties);
             ~Device();
 
+            const DeviceProperties getProperties() const {
+                return m_properties;
+            }
             const vk::Device& getVulkanDevice() const {
                 return *m_device;
             }
@@ -81,6 +87,7 @@ namespace Rendering
             }
 
         private:
+            DeviceProperties m_properties;
             vk::UniqueDevice m_device;
             vk::Queue m_graphicsQueue;
             vk::Queue m_presentationQueue;

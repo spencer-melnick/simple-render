@@ -13,6 +13,10 @@ namespace Rendering
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
+    vk::Format defaultSurfaceColorFormat = vk::Format::eB8G8R8A8Unorm;
+    
+
+
     DeviceProperties::DeviceProperties(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface) :
         m_physicalDevice(physicalDevice), m_totalHeapSize(0)
     {
@@ -21,6 +25,8 @@ namespace Rendering
         m_memoryProperties = m_physicalDevice.getMemoryProperties();
         m_queueProperties = m_physicalDevice.getQueueFamilyProperties();
         m_extensionProperties = m_physicalDevice.enumerateDeviceExtensionProperties();
+        m_surfaceFormats = m_physicalDevice.getSurfaceFormatsKHR(surface);
+        m_presentModes = m_physicalDevice.getSurfacePresentModesKHR(surface);
 
         // Calculate total heap size
         for (uint32_t i = 0; i < m_memoryProperties.memoryHeapCount; i ++)
@@ -87,6 +93,12 @@ namespace Rendering
             }
         }
 
+        // Check for supported formats
+        if (m_surfaceFormats.empty() || m_presentModes.empty())
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -109,12 +121,13 @@ namespace Rendering
         return a.getTotalHeapSize() > b.getTotalHeapSize();
     }
 
-    Device::Device(const DeviceProperties& properties)
+    Device::Device(DeviceProperties&& properties) :
+        m_properties(std::move(properties))
     {
-        if (!properties.getSupportsRequiredFeatures())
+        if (!m_properties.getSupportsRequiredFeatures())
         {
             spdlog::error("Cannot create logical device for {} - does not support required features",
-                properties.getDeviceProperties().deviceName);
+                m_properties.getDeviceProperties().deviceName);
             throw std::exception("Physical device does not support required Vulkan features");
         }
 
@@ -122,11 +135,11 @@ namespace Rendering
         std::vector<vk::DeviceQueueCreateInfo> queueCreateInfo;
 
         // Add a request for graphics and presentation queues
-        std::set<uint32_t> requestedQueueFamilies = {properties.getGraphicsQueue(), properties.getPresentationQueue()};
+        std::set<uint32_t> requestedQueueFamilies = {m_properties.getGraphicsQueue(), m_properties.getPresentationQueue()};
 
         for (auto& i : requestedQueueFamilies)
         {
-            queueCreateInfo.push_back(vk::DeviceQueueCreateInfo{{}, properties.getGraphicsQueue(), 1, &defaultQueuePriority});
+            queueCreateInfo.push_back(vk::DeviceQueueCreateInfo{{}, m_properties.getGraphicsQueue(), 1, &defaultQueuePriority});
         }
 
         // Populate our device info with all requested queues
@@ -139,10 +152,10 @@ namespace Rendering
         createInfo.ppEnabledExtensionNames = requiredDeviceExtensions.data();
 
         // Create the device with exception handling
-        spdlog::info("Creating Vulkan device for {}", properties.getDeviceProperties().deviceName);
+        spdlog::info("Creating Vulkan device for {}", m_properties.getDeviceProperties().deviceName);
         try
         {
-            m_device = properties.getPhysicalDevice().createDeviceUnique(createInfo);
+            m_device = m_properties.getPhysicalDevice().createDeviceUnique(createInfo);
         }
         catch (const std::exception& exception)
         {
@@ -151,8 +164,8 @@ namespace Rendering
         }
 
         spdlog::info("Aquiring queues");
-        m_graphicsQueue = m_device->getQueue(properties.getGraphicsQueue(), 0);
-        m_presentationQueue = m_device->getQueue(properties.getPresentationQueue(), 0);
+        m_graphicsQueue = m_device->getQueue(m_properties.getGraphicsQueue(), 0);
+        m_presentationQueue = m_device->getQueue(m_properties.getPresentationQueue(), 0);
     }
 
     Device::~Device()
