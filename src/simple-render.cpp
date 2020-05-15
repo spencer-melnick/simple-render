@@ -6,9 +6,6 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include "rendering/context.hpp"
-#include "rendering/shader.hpp"
-
 int main()
 {
     try
@@ -35,6 +32,9 @@ SimpleRenderApp::SimpleRenderApp()
     Rendering::Context::get();
 
     Rendering::Shader mainVertexShader("rc/shaders/test_vert.spv");
+    Rendering::Shader mainFragmentShader("rc/shaders/test_frag.spv");
+
+    Rendering::Pipeline mainPipeline(mainVertexShader, mainFragmentShader);
 
     m_isRunning = true;
 }

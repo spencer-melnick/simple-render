@@ -12,11 +12,11 @@ namespace Rendering
             Shader(const std::string_view& sourcePath);
             ~Shader();
 
-            const auto& getShaderModule() const {
-                return m_shaderModule;
+            vk::ShaderModule& getShaderModule() {
+                return m_shaderModule.get();
             }
 
         private:
             vk::UniqueShaderModule m_shaderModule;
     };
-}
+} 

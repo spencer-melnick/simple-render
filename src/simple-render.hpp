@@ -7,7 +7,7 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-#include "rendering/window.hpp"
+#include "rendering/rendering.hpp"
 
 class SimpleRenderApp
 {

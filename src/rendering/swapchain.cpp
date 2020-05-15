@@ -36,13 +36,11 @@ namespace Rendering
         // Query the actual resolution of the Vulkan window
         int swapchainWidth, swapchainHeight;
         SDL_Vulkan_GetDrawableSize(window.getSdlWindow(), &swapchainWidth, &swapchainHeight);
-        vk::Extent2D swapchainExtents(static_cast<uint32_t>(swapchainWidth),
-            static_cast<uint32_t>(swapchainHeight));
 
         // Limit extents by surface capabilities
-        swapchainExtents.width = std::clamp(swapchainExtents.width,
+        m_swapchainExtents.width = std::clamp(static_cast<uint32_t>(swapchainWidth),
             surfaceCapabilties.maxImageExtent.width, surfaceCapabilties.minImageExtent.width);
-        swapchainExtents.height = std::clamp(swapchainExtents.height,
+        m_swapchainExtents.height = std::clamp(static_cast<uint32_t>(swapchainHeight),
             surfaceCapabilties.maxImageExtent.height, surfaceCapabilties.minImageExtent.height);
 
         // Set image count to the minimum required plus one, unless limited
@@ -58,7 +56,7 @@ namespace Rendering
         createInfo.minImageCount = imageCount;
         createInfo.imageFormat = m_surfaceFormat.format;
         createInfo.imageColorSpace = m_surfaceFormat.colorSpace;
-        createInfo.imageExtent = swapchainExtents;
+        createInfo.imageExtent = m_swapchainExtents;
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
 

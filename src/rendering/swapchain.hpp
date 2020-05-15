@@ -27,6 +27,9 @@ namespace Rendering
             Swapchain(Device& device, Window& window);
             ~Swapchain();
 
+            auto getSwapchainExtents() const {
+                return m_swapchainExtents;
+            }
             const vk::SwapchainKHR& getSwapchain() const {
                 return *m_swapchain;
             }
@@ -40,6 +43,7 @@ namespace Rendering
             void aquireSwapchainImages(Device& device);
 
             vk::SurfaceFormatKHR m_surfaceFormat;
+            vk::Extent2D m_swapchainExtents;
             vk::UniqueSwapchainKHR m_swapchain;
             std::vector<Image> m_swapchainImages;
 
