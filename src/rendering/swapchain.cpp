@@ -26,7 +26,7 @@ namespace Rendering
     void Swapchain::createVulkanSwapchain(Device& device, Window& window)
     {
         // Grab the first surface format
-        auto surfaceFormat = device.getProperties().getSurfaceFormats()[0];
+        m_surfaceFormat = device.getProperties().getSurfaceFormats()[0];
         auto presentMode = defaultPresentMode;
 
         // Find surface exent limits
@@ -56,8 +56,8 @@ namespace Rendering
         vk::SwapchainCreateInfoKHR createInfo;
         createInfo.surface = window.getSurface();
         createInfo.minImageCount = imageCount;
-        createInfo.imageFormat = surfaceFormat.format;
-        createInfo.imageColorSpace = surfaceFormat.colorSpace;
+        createInfo.imageFormat = m_surfaceFormat.format;
+        createInfo.imageColorSpace = m_surfaceFormat.colorSpace;
         createInfo.imageExtent = swapchainExtents;
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
@@ -106,6 +106,25 @@ namespace Rendering
     void Swapchain::aquireSwapchainImages(Device& device)
     {
         spdlog::info("Aquiring swapchain images");
-        m_swapchainImages = device.getVulkanDevice().getSwapchainImagesKHR(m_swapchain.get());
+        auto swapchainImages = device.getVulkanDevice().getSwapchainImagesKHR(m_swapchain.get());
+
+        spdlog::info("Creating swapchain image views");
+        for (auto& i : swapchainImages)
+        {
+            auto& imageWithView = m_swapchainImages.emplace_back(i);
+            
+            vk::ImageViewCreateInfo createInfo;
+            createInfo.image = i;
+            createInfo.viewType = vk::ImageViewType::e2D;
+            createInfo.format = m_surfaceFormat.format;
+            createInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+            createInfo.subresourceRange.baseArrayLayer = 0;
+            createInfo.subresourceRange.baseMipLevel = 0;
+            createInfo.subresourceRange.layerCount = 1;
+            createInfo.subresourceRange.levelCount = 1;
+
+            imageWithView.imageView = device.getVulkanDevice().createImageViewUnique(createInfo);
+        }
+        spdlog::info("Created {} swapchain image views", m_swapchainImages.size());
     }
 }

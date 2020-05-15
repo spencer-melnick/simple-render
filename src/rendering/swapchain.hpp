@@ -14,6 +14,16 @@ namespace Rendering
     class Swapchain
     {
         public:
+            struct Image
+            {
+                Image(vk::Image image) :
+                    image(image), imageView(nullptr)
+                {};
+
+                vk::Image image;
+                vk::UniqueImageView imageView;
+            };
+
             Swapchain(Device& device, Window& window);
             ~Swapchain();
 
@@ -29,7 +39,10 @@ namespace Rendering
             void createVulkanSwapchain(Device& device, Window& window);
             void aquireSwapchainImages(Device& device);
 
+            vk::SurfaceFormatKHR m_surfaceFormat;
             vk::UniqueSwapchainKHR m_swapchain;
-            std::vector<vk::Image> m_swapchainImages;
+            std::vector<Image> m_swapchainImages;
+
+            // TODO: Move swapchain out of context?
     };
 }
