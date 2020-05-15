@@ -67,6 +67,40 @@ target_link_libraries(simple-render PRIVATE spdlog::spdlog)
 target_compile_definitions(simple-render PRIVATE VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
 
+# SPIR-V shader compilation
+function(target_shader_sources TARGET)
+	if (CMAKE_BUILD_TYPE MATCHES "Debug")
+		set(SHADER_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG})
+	else()
+		set(SHADER_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE})
+	endif()
+
+	foreach(CURRENT_SHADER_FILE IN LISTS ARGN)
+		# Grab the file path, name, and extension
+		if (${CURRENT_SHADER_FILE} MATCHES "([a-zA-Z\/\\_.:]*)[\\\/]([a-zA-Z_-]+)\.([a-zA-Z]+)")
+			# Change the name to have the .spv extension
+			set(OUTPUT_SHADER_FILE
+				"${SHADER_OUTPUT_DIR}/${CMAKE_MATCH_1}/${CMAKE_MATCH_2}_${CMAKE_MATCH_3}.spv")
+			add_custom_command(
+				OUTPUT ${OUTPUT_SHADER_FILE}
+				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+				COMMAND "glslc" "${CURRENT_SHADER_FILE}"
+					"-o" "${OUTPUT_SHADER_FILE}"
+				COMMENT "Compiling ${CURRENT_SHADER_FILE} to SPIR-V"
+				MAIN_DEPENDENCY ${CURRENT_SHADER_FILE}
+			)
+			target_sources(${TARGET} PRIVATE ${OUTPUT_SHADER_FILE})
+		endif()
+	endforeach()
+endfunction()
+
+# Add shader dependencies
+target_shader_sources(simple-render
+	rc/shaders/test.frag
+	rc/shaders/test.vert
+)
+
+
 if (WIN32)
 	# Link SDL2main on windows to allow for a portable main()
 	target_compile_definitions(simple-render PRIVATE SDL_MAIN_HANDLED)
