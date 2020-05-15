@@ -7,6 +7,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include "rendering/context.hpp"
+#include "rendering/shader.hpp"
 
 int main()
 {
@@ -32,6 +33,8 @@ SimpleRenderApp::SimpleRenderApp()
     initializeLogger();
     Rendering::Instance::get();
     Rendering::Context::get();
+
+    Rendering::Shader mainVertexShader("rc/shaders/test_vert.spv");
 
     m_isRunning = true;
 }

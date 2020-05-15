@@ -50,8 +50,10 @@ target_sources(simple-render PRIVATE
 	src/rendering/device.cpp
 	src/rendering/context.cpp
 	src/rendering/instance.cpp
+	src/rendering/shader.cpp
 	src/rendering/swapchain.cpp
 	src/rendering/window.cpp
+	src/util/simplefile.cpp
 )
 
 

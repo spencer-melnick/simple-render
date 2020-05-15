@@ -44,5 +44,6 @@ namespace Rendering
             std::vector<Image> m_swapchainImages;
 
             // TODO: Move swapchain out of context?
+            // possibly into window
     };
 }

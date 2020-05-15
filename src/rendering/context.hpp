@@ -27,6 +27,9 @@ namespace Rendering
             Swapchain& getSwapchain() {
                 return m_swapchain.value();
             }
+            static const vk::Device& getVulkanDevice() {
+                return get().getDevice().getVulkanDevice();
+            }
         
         private:
             Context();
