@@ -24,6 +24,9 @@ namespace Rendering
             Window& getWindow() {
                 return m_window.value();
             }
+            Swapchain& getSwapchain() {
+                return m_swapchain.value();
+            }
         
         private:
             Context();
@@ -34,5 +37,6 @@ namespace Rendering
 
             std::optional<Window> m_window;
             std::optional<Device> m_device;
+            std::optional<Swapchain> m_swapchain;
     };
 }

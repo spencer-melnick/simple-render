@@ -23,11 +23,16 @@ namespace Rendering
         // and determine which devices support that surface
         m_window.emplace(800, 600);
         chooseDevice();
+
+        // Create initial swapchain
+        m_swapchain.emplace(m_device.value(), m_window.value());
+
+        spdlog::info("Rendering context created");
     }
 
     Context::~Context()
     {
-        spdlog::info("Destroying context");
+        spdlog::info("Destroying rendering context");
     }
 
     void Context::chooseDevice()

@@ -21,23 +21,29 @@ namespace Rendering
 
 
             // Getters
-            auto getPhysicalDevice() const {
+            auto& getPhysicalDevice() const {
                 return m_physicalDevice;
             }
-            auto getDeviceProperties() const {
+            auto& getDeviceProperties() const {
                 return m_deviceProperties;
             }
-            auto getMemoryProperties() const {
+            auto& getMemoryProperties() const {
                 return m_memoryProperties;
             }
-            auto getTotalHeapSize() const {
+            auto& getTotalHeapSize() const {
                 return m_totalHeapSize;
             }
-            auto getQueueProperties() const {
+            auto& getQueueProperties() const {
                 return m_queueProperties;
             }
-            auto getExtensionProperties() const {
+            auto& getExtensionProperties() const {
                 return m_extensionProperties;
+            }
+            auto& getSurfaceFormats() const {
+                return m_surfaceFormats;
+            }
+            auto& getPresentModes() const {
+                return m_presentModes;
             }
             auto getGraphicsQueue() const {
                 return m_graphicsQueue.value();
