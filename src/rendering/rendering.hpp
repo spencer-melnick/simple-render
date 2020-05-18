@@ -6,4 +6,5 @@
 #include "window.hpp"
 #include "swapchain.hpp"
 #include "shader.hpp"
+#include "pass.hpp"
 #include "pipeline.hpp"

@@ -34,6 +34,7 @@ SimpleRenderApp::SimpleRenderApp()
     Rendering::Shader mainVertexShader("rc/shaders/test_vert.spv");
     Rendering::Shader mainFragmentShader("rc/shaders/test_frag.spv");
 
+    Rendering::Pass mainPass;
     Rendering::Pipeline mainPipeline(mainVertexShader, mainFragmentShader);
 
     m_isRunning = true;
@@ -73,5 +74,9 @@ void SimpleRenderApp::initializeLogger()
 
     // Set up a basic logger (don't handle exceptions - main will get those)
     auto defaultLogger = spdlog::basic_logger_mt("default_logger", "log.txt", true);
+
+    // Flush on any error
+    defaultLogger->flush_on(spdlog::level::err);
+    
     spdlog::set_default_logger(defaultLogger);
 }

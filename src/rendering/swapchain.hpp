@@ -27,6 +27,9 @@ namespace Rendering
             Swapchain(Device& device, Window& window);
             ~Swapchain();
 
+            auto getSurfaceFormat() const {
+                return m_surfaceFormat;
+            }
             auto getSwapchainExtents() const {
                 return m_swapchainExtents;
             }

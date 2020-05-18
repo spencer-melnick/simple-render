@@ -39,3 +39,6 @@ bin
 
 # Default log file
 log.txt
+
+# Compiled shaders
+*.spv
