@@ -35,7 +35,7 @@ SimpleRenderApp::SimpleRenderApp()
     Rendering::Shader mainFragmentShader("rc/shaders/test_frag.spv");
 
     Rendering::Pass mainPass;
-    Rendering::Pipeline mainPipeline(mainVertexShader, mainFragmentShader);
+    Rendering::Pipeline mainPipeline(mainVertexShader, mainFragmentShader, mainPass);
 
     m_isRunning = true;
 }

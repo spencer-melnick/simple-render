@@ -11,7 +11,7 @@ namespace Rendering
     // TODO: Add a lot configuration here!
     // Multiple pipelines for different things would be useful
     // This is all just default state from the tutorial
-    Pipeline::Pipeline(Shader& vertexShader, Shader& fragmentShader)
+    Pipeline::Pipeline(Shader& vertexShader, Shader& fragmentShader, Pass& pass)
     {
         // Pipeline info for vertex and fragment shaders
         std::vector<vk::PipelineShaderStageCreateInfo> shaderStages = {
@@ -70,6 +70,7 @@ namespace Rendering
         rasterState.cullMode = vk::CullModeFlagBits::eBack;
         rasterState.frontFace = vk::FrontFace::eClockwise;
         rasterState.depthBiasEnable = false;
+        rasterState.lineWidth = 1.0f;
 
         // Multisampling settings :o
         vk::PipelineMultisampleStateCreateInfo multisampleState;
@@ -97,15 +98,31 @@ namespace Rendering
         dynamicState.dynamicStateCount = static_cast<uint32_t>(enabledDynamicStates.size());
         dynamicState.pDynamicStates = enabledDynamicStates.data();
 
-        // Finally create the actual pipeline layout
+        // Create the pipeline layout
         vk::PipelineLayoutCreateInfo layoutInfo;
-
         spdlog::info("Creating pipeline layout");
         m_pipelineLayout = Context::getVulkanDevice().createPipelineLayoutUnique(layoutInfo);
+
+        // Finally create the pipeline!
+        vk::GraphicsPipelineCreateInfo createInfo;
+        createInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
+        createInfo.pStages = shaderStages.data();
+        createInfo.pVertexInputState = &vertexInputInfo;
+        createInfo.pInputAssemblyState = &assemblyInfo;
+        createInfo.pRasterizationState = &rasterState;
+        createInfo.pViewportState = &viewportState;
+        createInfo.pMultisampleState = &multisampleState;
+        createInfo.pColorBlendState = &blendState;
+        createInfo.layout = *m_pipelineLayout;
+        createInfo.renderPass = pass.getRenderPass();
+        createInfo.subpass = 0;
+
+        spdlog::info("Creating graphics pipeline");
+        m_pipeline = Context::getVulkanDevice().createGraphicsPipelineUnique(nullptr, createInfo);
     }
 
     Pipeline::~Pipeline()
     {
-        spdlog::info("Destroying rendering pipeline");
+        spdlog::info("Destroying graphics pipeline");
     }
 }
