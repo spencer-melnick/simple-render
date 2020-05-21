@@ -11,7 +11,7 @@ namespace Rendering
     {
         // Right now this is a very simple render pass, just base color
         vk::AttachmentDescription colorAttachment;
-        colorAttachment.format = Context::get().getSwapchain().getSurfaceFormat().format;
+        colorAttachment.format = swapchain.getSurfaceFormat().format;
         colorAttachment.samples = vk::SampleCountFlagBits::e1;
         colorAttachment.loadOp = vk::AttachmentLoadOp::eClear;
         colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;
