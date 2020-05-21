@@ -37,6 +37,9 @@ SimpleRenderApp::SimpleRenderApp()
     Rendering::Pass mainPass;
     Rendering::Pipeline mainPipeline(mainVertexShader, mainFragmentShader, mainPass);
 
+    Rendering::Context::get().getSwapchain().createFramebuffers(
+        Rendering::Context::get().getDevice(), mainPass);
+
     m_isRunning = true;
 }
 

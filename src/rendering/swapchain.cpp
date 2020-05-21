@@ -7,6 +7,7 @@
 
 #include "device.hpp"
 #include "window.hpp"
+#include "pass.hpp"
 
 namespace Rendering
 {
@@ -22,6 +23,25 @@ namespace Rendering
     {
         spdlog::info("Destroying swapchain");
     }
+
+    void Swapchain::createFramebuffers(Device& device, Pass& pass)
+    {
+        spdlog::info("Creating {} framebuffers", m_swapchainImages.size());
+
+        for (auto& i : m_swapchainImages)
+        {
+            vk::FramebufferCreateInfo createInfo;
+            createInfo.attachmentCount = 1;
+            createInfo.pAttachments = &i.imageView.get();
+            createInfo.width = m_swapchainExtents.width;
+            createInfo.height = m_swapchainExtents.height;
+            createInfo.layers = 1;
+            createInfo.renderPass = pass.getRenderPass();
+
+            i.framebuffer = device.getVulkanDevice().createFramebufferUnique(createInfo);
+        }
+    }
+
 
     void Swapchain::createVulkanSwapchain(Device& device, Window& window)
     {

@@ -10,6 +10,7 @@ namespace Rendering
 
     class Device;
     class Window;
+    class Pass;
 
     class Swapchain
     {
@@ -17,15 +18,18 @@ namespace Rendering
             struct Image
             {
                 Image(vk::Image image) :
-                    image(image), imageView(nullptr)
+                    image(image), imageView(nullptr), framebuffer(nullptr)
                 {};
 
                 vk::Image image;
                 vk::UniqueImageView imageView;
+                vk::UniqueFramebuffer framebuffer;
             };
 
             Swapchain(Device& device, Window& window);
             ~Swapchain();
+
+            void createFramebuffers(Device& device, Pass& pass);
 
             auto getSurfaceFormat() const {
                 return m_surfaceFormat;
