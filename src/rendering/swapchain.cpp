@@ -1,10 +1,12 @@
 #include "swapchain.hpp"
 
 #include <algorithm>
+#include <limits>
 
 #include <spdlog/spdlog.h>
 #include <SDL2/SDL_vulkan.h>
 
+#include "context.hpp"
 #include "device.hpp"
 #include "window.hpp"
 #include "pass.hpp"
@@ -22,6 +24,17 @@ namespace Rendering
     Swapchain::~Swapchain()
     {
         spdlog::info("Destroying swapchain");
+    }
+
+    const Swapchain::Image& Swapchain::getNextImage() const
+    {
+        const Swapchain::Image& currentImage = m_swapchainImages[m_currentFrame];
+
+        // Context::getVulkanDevice().acquireNextImageKHR(*m_swapchain,
+            // std::numeric_limits<uint64_t>::max, *currentImage.imageAvailable,
+            // nullptr);
+
+        return currentImage;
     }
 
 
@@ -153,6 +166,11 @@ namespace Rendering
 
             imageWithView.imageView = device.getVulkanDevice().createImageViewUnique(createInfo);
         }
-        spdlog::info("Created {} swapchain image views", m_swapchainImages.size());
+        spdlog::info("Aquired {} swapchain images", m_swapchainImages.size());
+    }
+
+    void Swapchain::createFrameData()
+    {
+
     }
 }

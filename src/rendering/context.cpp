@@ -24,6 +24,9 @@ namespace Rendering
         m_window.emplace(800, 600);
         chooseDevice();
 
+        // Right now there is a single graphics command pool
+        createCommandPool();
+
         // Create initial swapchain
         m_swapchain.emplace(m_device.value(), m_window.value());
 
@@ -79,5 +82,15 @@ namespace Rendering
 
         m_device.emplace(std::move(deviceProperties.front()));
         VULKAN_HPP_DEFAULT_DISPATCHER.init(m_device->getVulkanDevice());
+    }
+
+    void Context::createCommandPool()
+    {
+        vk::CommandPoolCreateInfo createInfo;
+        createInfo.flags = vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+        createInfo.queueFamilyIndex = m_device.value().getProperties().getGraphicsQueue();
+
+        spdlog::info("Creating primary command pool");
+        m_commandPool = m_device.value().getVulkanDevice().createCommandPoolUnique(createInfo);
     }
 }

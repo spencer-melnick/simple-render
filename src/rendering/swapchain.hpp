@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <vector>
 #include <optional>
 #include <functional>
@@ -30,6 +31,20 @@ namespace Rendering
                 vk::UniqueFramebuffer framebuffer;
             };
 
+            struct FrameData
+            {
+                FrameData() :
+                    imageAvailable(nullptr), renderFinished(nullptr),
+                    fence(nullptr)
+                {};
+
+                vk::UniqueSemaphore imageAvailable;
+                vk::UniqueSemaphore renderFinished;
+                vk::UniqueFence fence;
+            };
+
+            static const size_t FrameCount = 2;
+
             Swapchain(Device& device, Window& window);
             ~Swapchain();
 
@@ -46,6 +61,7 @@ namespace Rendering
             const auto& getSwapchainImages() const {
                 return m_swapchainImages;
             }
+            const Image& getNextImage() const;
 
         protected:
             // Creates framebuffers for each swapchain image that support
@@ -57,12 +73,15 @@ namespace Rendering
             // Initialization steps
             void createVulkanSwapchain(Device& device, Window& window);
             void aquireSwapchainImages(Device& device);
+            void createFrameData();
 
             vk::SurfaceFormatKHR m_surfaceFormat;
             vk::Extent2D m_swapchainExtents;
             vk::UniqueSwapchainKHR m_swapchain;
             std::vector<Image> m_swapchainImages;
             std::optional<std::reference_wrapper<Pass>> m_associatedPass;
+            size_t m_currentFrame = 0;
+            std::array<FrameData, FrameCount> m_frameData;
 
             // TODO: Move swapchain out of context?
             // possibly into window

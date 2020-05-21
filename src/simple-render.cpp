@@ -31,11 +31,11 @@ SimpleRenderApp::SimpleRenderApp()
     Rendering::Instance::get();
     Rendering::Context::get();
 
-    Rendering::Shader mainVertexShader("rc/shaders/test_vert.spv");
-    Rendering::Shader mainFragmentShader("rc/shaders/test_frag.spv");
+    m_mainVertexShader.emplace("rc/shaders/test_vert.spv");
+    m_mainFragmentShader.emplace("rc/shaders/test_frag.spv");
 
-    Rendering::Pass mainPass(Rendering::Context::get().getSwapchain());
-    Rendering::Pipeline mainPipeline(mainVertexShader, mainFragmentShader, mainPass);
+    m_mainPass.emplace(Rendering::Context::get().getSwapchain());
+    m_mainPipeline.emplace(m_mainVertexShader.value(), m_mainFragmentShader.value(), m_mainPass.value());
 
     m_isRunning = true;
 }
@@ -64,6 +64,15 @@ void SimpleRenderApp::loop()
             }
         }
     }
+}
+
+void SimpleRenderApp::render()
+{
+    Rendering::CommandBuffer primaryBuffer(Rendering::CommandBuffer::Type::Primary);
+
+    vk::CommandBufferBeginInfo primaryBufferInfo;
+    primaryBufferInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+    
 }
 
 

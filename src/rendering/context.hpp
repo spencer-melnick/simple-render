@@ -27,6 +27,9 @@ namespace Rendering
             Swapchain& getSwapchain() {
                 return m_swapchain.value();
             }
+            static const vk::CommandPool& getCommandPool() {
+                return *get().m_commandPool;
+            }
             static const vk::Device& getVulkanDevice() {
                 return get().getDevice().getVulkanDevice();
             }
@@ -37,9 +40,11 @@ namespace Rendering
 
             // Initialization steps
             void chooseDevice();
+            void createCommandPool();
 
             std::optional<Window> m_window;
             std::optional<Device> m_device;
             std::optional<Swapchain> m_swapchain;
+            vk::UniqueCommandPool m_commandPool;
     };
 }
