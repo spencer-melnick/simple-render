@@ -6,6 +6,8 @@
 
 namespace Rendering
 {
+    class Swapchain;
+
     // Does nothing right now!
     class Subpass
     {
@@ -15,7 +17,7 @@ namespace Rendering
     class Pass
     {
         public:
-            Pass();
+            Pass(Swapchain& swapchain);
             ~Pass();
 
             const vk::RenderPass& getRenderPass() const {

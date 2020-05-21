@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <optional>
+#include <functional>
 
 #include <vulkan/vulkan.hpp>
 
@@ -14,6 +16,8 @@ namespace Rendering
 
     class Swapchain
     {
+        friend class Pass;
+
         public:
             struct Image
             {
@@ -29,7 +33,6 @@ namespace Rendering
             Swapchain(Device& device, Window& window);
             ~Swapchain();
 
-            void createFramebuffers(Device& device, Pass& pass);
 
             auto getSurfaceFormat() const {
                 return m_surfaceFormat;
@@ -44,6 +47,12 @@ namespace Rendering
                 return m_swapchainImages;
             }
 
+        protected:
+            // Creates framebuffers for each swapchain image that support
+            // the image types required by the render pass, and stores
+            // a reference (in case the swapchain needs to be recreated)
+            void attachRenderPass(Device& device, Pass& pass);
+
         private:
             // Initialization steps
             void createVulkanSwapchain(Device& device, Window& window);
@@ -53,6 +62,7 @@ namespace Rendering
             vk::Extent2D m_swapchainExtents;
             vk::UniqueSwapchainKHR m_swapchain;
             std::vector<Image> m_swapchainImages;
+            std::optional<std::reference_wrapper<Pass>> m_associatedPass;
 
             // TODO: Move swapchain out of context?
             // possibly into window

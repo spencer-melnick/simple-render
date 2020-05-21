@@ -34,11 +34,8 @@ SimpleRenderApp::SimpleRenderApp()
     Rendering::Shader mainVertexShader("rc/shaders/test_vert.spv");
     Rendering::Shader mainFragmentShader("rc/shaders/test_frag.spv");
 
-    Rendering::Pass mainPass;
+    Rendering::Pass mainPass(Rendering::Context::get().getSwapchain());
     Rendering::Pipeline mainPipeline(mainVertexShader, mainFragmentShader, mainPass);
-
-    Rendering::Context::get().getSwapchain().createFramebuffers(
-        Rendering::Context::get().getDevice(), mainPass);
 
     m_isRunning = true;
 }

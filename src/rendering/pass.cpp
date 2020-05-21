@@ -3,10 +3,11 @@
 #include <spdlog/spdlog.h>
 
 #include "context.hpp"
+#include "swapchain.hpp"
 
 namespace Rendering
 {
-    Pass::Pass()
+    Pass::Pass(Swapchain& swapchain)
     {
         // Right now this is a very simple render pass, just base color
         vk::AttachmentDescription colorAttachment;
@@ -38,6 +39,8 @@ namespace Rendering
 
         spdlog::info("Creating rendering pass");
         m_renderPass = Context::getVulkanDevice().createRenderPassUnique(createInfo);
+
+        swapchain.attachRenderPass(Context::get().getDevice(), *this);
     }
 
     Pass::~Pass()

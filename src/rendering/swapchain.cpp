@@ -24,10 +24,20 @@ namespace Rendering
         spdlog::info("Destroying swapchain");
     }
 
-    void Swapchain::createFramebuffers(Device& device, Pass& pass)
-    {
-        spdlog::info("Creating {} framebuffers", m_swapchainImages.size());
 
+    void Swapchain::attachRenderPass(Device& device, Pass& pass)
+    {
+        spdlog::info("Attaching render pass to swapchain");
+
+        if (m_associatedPass.has_value())
+        {
+            spdlog::warn("Swapchain already has framebuffers associated with a render pass");
+            spdlog::warn("The previously associated render pass may not function properly");
+        }
+
+        m_associatedPass = pass;
+
+        spdlog::info("Creating {} framebuffers", m_swapchainImages.size());
         for (auto& i : m_swapchainImages)
         {
             vk::FramebufferCreateInfo createInfo;
