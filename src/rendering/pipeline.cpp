@@ -41,26 +41,11 @@ namespace Rendering
         assemblyInfo.primitiveRestartEnable = false;
 
         // Viewport and scissor settings
-        vk::Extent2D swapchainExtents = Context::get().getSwapchain().getSwapchainExtents();
-
-        vk::Viewport viewport;
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = static_cast<float>(swapchainExtents.width);
-        viewport.height = static_cast<float>(swapchainExtents.height);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-
-        vk::Rect2D scissor;
-        scissor.offset.x = 0;
-        scissor.offset.y = 0;
-        scissor.extent = swapchainExtents;
-
         vk::PipelineViewportStateCreateInfo viewportState;
         viewportState.viewportCount = 1;
-        viewportState.pViewports = &viewport;
+        viewportState.pViewports = nullptr;
         viewportState.scissorCount = 1;
-        viewportState.pScissors = &scissor;
+        viewportState.pScissors = nullptr;
 
         // Rasterizer settings!
         vk::PipelineRasterizationStateCreateInfo rasterState;
@@ -92,7 +77,8 @@ namespace Rendering
 
         // Dynamic settings
         std::vector<vk::DynamicState> enabledDynamicStates = {
-            // vk::DynamicState::eViewport
+            vk::DynamicState::eViewport,
+            vk::DynamicState::eScissor
         };
         vk::PipelineDynamicStateCreateInfo dynamicState;
         dynamicState.dynamicStateCount = static_cast<uint32_t>(enabledDynamicStates.size());
@@ -114,6 +100,7 @@ namespace Rendering
         createInfo.pMultisampleState = &multisampleState;
         createInfo.pColorBlendState = &blendState;
         createInfo.layout = *m_pipelineLayout;
+        createInfo.pDynamicState = &dynamicState;
         createInfo.renderPass = pass.getRenderPass();
         createInfo.subpass = 0;
 

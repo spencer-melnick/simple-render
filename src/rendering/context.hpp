@@ -24,9 +24,6 @@ namespace Rendering
             Window& getWindow() {
                 return m_window.value();
             }
-            Swapchain& getSwapchain() {
-                return m_swapchain.value();
-            }
             static const vk::CommandPool& getCommandPool() {
                 return *get().m_commandPool;
             }
@@ -44,7 +41,6 @@ namespace Rendering
 
             std::optional<Window> m_window;
             std::optional<Device> m_device;
-            std::optional<Swapchain> m_swapchain;
             vk::UniqueCommandPool m_commandPool;
     };
 }

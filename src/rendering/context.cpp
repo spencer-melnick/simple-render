@@ -27,9 +27,6 @@ namespace Rendering
         // Right now there is a single graphics command pool
         createCommandPool();
 
-        // Create initial swapchain
-        m_swapchain.emplace(m_device.value(), m_window.value());
-
         spdlog::info("Rendering context created");
     }
 

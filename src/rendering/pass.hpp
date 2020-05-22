@@ -17,7 +17,7 @@ namespace Rendering
     class Pass
     {
         public:
-            Pass(Swapchain& swapchain);
+            Pass();
             ~Pass();
 
             const vk::RenderPass& getRenderPass() const {

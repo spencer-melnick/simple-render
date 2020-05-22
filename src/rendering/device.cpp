@@ -166,10 +166,31 @@ namespace Rendering
         spdlog::info("Aquiring queues");
         m_graphicsQueue = m_device->getQueue(m_properties.getGraphicsQueue(), 0);
         m_presentationQueue = m_device->getQueue(m_properties.getPresentationQueue(), 0);
+
+        chooseSurfaceFormat();
     }
 
     Device::~Device()
     {
         spdlog::info("Destroying Vulkan logical device");
+    }
+
+    void Device::chooseSurfaceFormat()
+    {
+        auto& surfaceFormats = m_properties.getSurfaceFormats();
+
+        // If there is a single supported format with the type undefined
+        // then any surface format is supported
+        if (surfaceFormats.size() == 1 &&
+            surfaceFormats.front().format == vk::Format::eUndefined)
+        {
+            m_surfaceFormat.format = vk::Format::eR8G8B8Unorm;
+            m_surfaceFormat.colorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
+        }
+        // Otherwise just use the suggested format
+        else
+        {
+            m_surfaceFormat = surfaceFormats.front();
+        }
     }
 }

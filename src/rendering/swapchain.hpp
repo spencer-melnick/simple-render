@@ -45,7 +45,7 @@ namespace Rendering
 
             static const size_t FrameCount = 2;
 
-            Swapchain(Device& device, Window& window);
+            Swapchain(Window& window, Pass& pass);
             ~Swapchain();
 
 
@@ -64,26 +64,25 @@ namespace Rendering
             const Image& getNextImage() const;
 
         protected:
-            // Creates framebuffers for each swapchain image that support
-            // the image types required by the render pass, and stores
-            // a reference (in case the swapchain needs to be recreated)
-            void attachRenderPass(Device& device, Pass& pass);
 
         private:
             // Initialization steps
-            void createVulkanSwapchain(Device& device, Window& window);
-            void aquireSwapchainImages(Device& device);
+            void createVulkanSwapchain(Window& window);
+            void aquireSwapchainImages();
+            void createFramebuffers();
             void createFrameData();
 
             vk::SurfaceFormatKHR m_surfaceFormat;
             vk::Extent2D m_swapchainExtents;
             vk::UniqueSwapchainKHR m_swapchain;
             std::vector<Image> m_swapchainImages;
-            std::optional<std::reference_wrapper<Pass>> m_associatedPass;
+
+            // TODO: move frame data elsewhere?
             size_t m_currentFrame = 0;
             std::array<FrameData, FrameCount> m_frameData;
 
-            // TODO: Move swapchain out of context?
-            // possibly into window
+            // Store reference to render pass in case we need to
+            // recreate the swapchain
+            Pass& m_renderPass; 
     };
 }

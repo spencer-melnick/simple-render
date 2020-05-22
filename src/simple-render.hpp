@@ -32,4 +32,5 @@ class SimpleRenderApp
         std::optional<Rendering::Shader> m_mainFragmentShader;
         std::optional<Rendering::Pass> m_mainPass;
         std::optional<Rendering::Pipeline> m_mainPipeline;
+        std::optional<Rendering::Swapchain> m_swapchain;
 };

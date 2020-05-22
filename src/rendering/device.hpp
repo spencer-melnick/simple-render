@@ -91,11 +91,17 @@ namespace Rendering
             vk::Queue& getPresentationQueue() {
                 return m_presentationQueue;
             }
+            vk::SurfaceFormatKHR getSurfaceFormat() const {
+                return m_surfaceFormat;
+            }
 
         private:
+            void chooseSurfaceFormat();
+
             DeviceProperties m_properties;
             vk::UniqueDevice m_device;
             vk::Queue m_graphicsQueue;
             vk::Queue m_presentationQueue;
+            vk::SurfaceFormatKHR m_surfaceFormat;
     };
 }

@@ -3,15 +3,14 @@
 #include <spdlog/spdlog.h>
 
 #include "context.hpp"
-#include "swapchain.hpp"
 
 namespace Rendering
 {
-    Pass::Pass(Swapchain& swapchain)
+    Pass::Pass()
     {
         // Right now this is a very simple render pass, just base color
         vk::AttachmentDescription colorAttachment;
-        colorAttachment.format = swapchain.getSurfaceFormat().format;
+        colorAttachment.format = Context::get().getDevice().getSurfaceFormat().format;
         colorAttachment.samples = vk::SampleCountFlagBits::e1;
         colorAttachment.loadOp = vk::AttachmentLoadOp::eClear;
         colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;
@@ -39,8 +38,6 @@ namespace Rendering
 
         spdlog::info("Creating rendering pass");
         m_renderPass = Context::getVulkanDevice().createRenderPassUnique(createInfo);
-
-        swapchain.attachRenderPass(Context::get().getDevice(), *this);
     }
 
     Pass::~Pass()

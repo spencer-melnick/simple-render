@@ -15,10 +15,13 @@ namespace Rendering
 {
     vk::PresentModeKHR defaultPresentMode = vk::PresentModeKHR::eFifo;
 
-    Swapchain::Swapchain(Device& device, Window& window)
+    Swapchain::Swapchain(Window& window, Pass& pass) :
+        m_renderPass(pass)
     {
-        createVulkanSwapchain(device, window);
-        aquireSwapchainImages(device);
+        createVulkanSwapchain(window);
+        aquireSwapchainImages();
+        createFramebuffers();
+        createFrameData();
     }
 
     Swapchain::~Swapchain()
@@ -38,43 +41,15 @@ namespace Rendering
     }
 
 
-    void Swapchain::attachRenderPass(Device& device, Pass& pass)
-    {
-        spdlog::info("Attaching render pass to swapchain");
-
-        if (m_associatedPass.has_value())
-        {
-            spdlog::warn("Swapchain already has framebuffers associated with a render pass");
-            spdlog::warn("The previously associated render pass may not function properly");
-        }
-
-        m_associatedPass = pass;
-
-        spdlog::info("Creating {} framebuffers", m_swapchainImages.size());
-        for (auto& i : m_swapchainImages)
-        {
-            vk::FramebufferCreateInfo createInfo;
-            createInfo.attachmentCount = 1;
-            createInfo.pAttachments = &i.imageView.get();
-            createInfo.width = m_swapchainExtents.width;
-            createInfo.height = m_swapchainExtents.height;
-            createInfo.layers = 1;
-            createInfo.renderPass = pass.getRenderPass();
-
-            i.framebuffer = device.getVulkanDevice().createFramebufferUnique(createInfo);
-        }
-    }
-
-
-    void Swapchain::createVulkanSwapchain(Device& device, Window& window)
+    void Swapchain::createVulkanSwapchain(Window& window)
     {
         // Grab the first surface format
-        m_surfaceFormat = device.getProperties().getSurfaceFormats()[0];
+        m_surfaceFormat = Context::get().getDevice().getSurfaceFormat();
         auto presentMode = defaultPresentMode;
 
         // Find surface exent limits
         auto surfaceCapabilties =
-            device.getProperties().getPhysicalDevice().getSurfaceCapabilitiesKHR(window.getSurface());
+            Context::get().getDevice().getProperties().getPhysicalDevice().getSurfaceCapabilitiesKHR(window.getSurface());
 
         // Query the actual resolution of the Vulkan window
         int swapchainWidth, swapchainHeight;
@@ -103,7 +78,8 @@ namespace Rendering
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
 
-        if (device.getProperties().getGraphicsQueue() == device.getProperties().getPresentationQueue())
+        if (Context::get().getDevice().getProperties().getGraphicsQueue() ==
+            Context::get().getDevice().getProperties().getPresentationQueue())
         {
             // If presentation and graphics queues use the same family
             // then the swapchain can be used in exclusive mode
@@ -115,8 +91,8 @@ namespace Rendering
             // Otherwise it must be shared in concurrent mode
             // (for basic usage)
             std::vector<uint32_t> queueIndices = {
-                device.getProperties().getGraphicsQueue(),
-                device.getProperties().getPresentationQueue()
+                Context::get().getDevice().getProperties().getGraphicsQueue(),
+                Context::get().getDevice().getProperties().getPresentationQueue()
             };
 
             createInfo.imageSharingMode = vk::SharingMode::eConcurrent;
@@ -135,7 +111,7 @@ namespace Rendering
         spdlog::info("Creating Vulkan swapchain");
         try
         {
-            m_swapchain = device.getVulkanDevice().createSwapchainKHRUnique(createInfo);
+            m_swapchain = Context::getVulkanDevice().createSwapchainKHRUnique(createInfo);
         }
         catch (const std::exception& exception)
         {
@@ -144,10 +120,10 @@ namespace Rendering
         }
     }
 
-    void Swapchain::aquireSwapchainImages(Device& device)
+    void Swapchain::aquireSwapchainImages()
     {
         spdlog::info("Aquiring swapchain images");
-        auto swapchainImages = device.getVulkanDevice().getSwapchainImagesKHR(m_swapchain.get());
+        auto swapchainImages = Context::getVulkanDevice().getSwapchainImagesKHR(m_swapchain.get());
 
         spdlog::info("Creating swapchain image views");
         for (auto& i : swapchainImages)
@@ -164,9 +140,26 @@ namespace Rendering
             createInfo.subresourceRange.layerCount = 1;
             createInfo.subresourceRange.levelCount = 1;
 
-            imageWithView.imageView = device.getVulkanDevice().createImageViewUnique(createInfo);
+            imageWithView.imageView = Context::getVulkanDevice().createImageViewUnique(createInfo);
         }
         spdlog::info("Aquired {} swapchain images", m_swapchainImages.size());
+    }
+
+    void Swapchain::createFramebuffers()
+    {
+        spdlog::info("Creating {} framebuffers", m_swapchainImages.size());
+        for (auto& i : m_swapchainImages)
+        {
+            vk::FramebufferCreateInfo createInfo;
+            createInfo.attachmentCount = 1;
+            createInfo.pAttachments = &i.imageView.get();
+            createInfo.width = m_swapchainExtents.width;
+            createInfo.height = m_swapchainExtents.height;
+            createInfo.layers = 1;
+            createInfo.renderPass = m_renderPass.getRenderPass();
+
+            i.framebuffer = Context::getVulkanDevice().createFramebufferUnique(createInfo);
+        }
     }
 
     void Swapchain::createFrameData()
