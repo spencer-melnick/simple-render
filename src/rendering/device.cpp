@@ -2,6 +2,7 @@
 
 #include <set>
 #include <string_view>
+#include <algorithm>
 
 #include <spdlog/spdlog.h>
 
@@ -13,7 +14,7 @@ namespace Rendering
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    vk::Format defaultSurfaceColorFormat = vk::Format::eB8G8R8A8Unorm;
+    const vk::SurfaceFormatKHR Device::PreferredSurfaceFormat{vk::Format::eB8G8R8A8Srgb, vk::ColorSpaceKHR::eSrgbNonlinear};
     
 
 
@@ -184,13 +185,26 @@ namespace Rendering
         if (surfaceFormats.size() == 1 &&
             surfaceFormats.front().format == vk::Format::eUndefined)
         {
-            m_surfaceFormat.format = vk::Format::eR8G8B8Unorm;
-            m_surfaceFormat.colorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
+            m_surfaceFormat = PreferredSurfaceFormat;
         }
-        // Otherwise just use the suggested format
+        // Otherwise try and find preferred format
         else
         {
-            m_surfaceFormat = surfaceFormats.front();
+            auto foundFormat = std::find(surfaceFormats.begin(), surfaceFormats.end(),
+                PreferredSurfaceFormat
+            );
+
+            if (foundFormat == std::end(surfaceFormats))
+            {
+                spdlog::debug("Device does not support sRGB8");
+                m_surfaceFormat = surfaceFormats.front();
+                spdlog::debug("Using format {}, color space {}",
+                    m_surfaceFormat.format, m_surfaceFormat.colorSpace);
+            }
+            else
+            {
+                m_surfaceFormat = *foundFormat;
+            }
         }
     }
 }

@@ -76,6 +76,8 @@ namespace Rendering
     class Device
     {
         public:
+            static const vk::SurfaceFormatKHR PreferredSurfaceFormat;
+
             Device(DeviceProperties&& properties);
             ~Device();
 
