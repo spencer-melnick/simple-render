@@ -45,7 +45,10 @@ namespace Rendering
     {
         initializeSdl();
         initializeVulkan();
+
+        #ifndef NDEBUG
         setupVulkanDebug();
+        #endif
 
         auto extensionProperies = vk::enumerateInstanceExtensionProperties();
         spdlog::info("{} Vulkan extensions supported", extensionProperies.size());
