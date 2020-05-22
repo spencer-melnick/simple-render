@@ -31,20 +31,6 @@ namespace Rendering
                 vk::UniqueFramebuffer framebuffer;
             };
 
-            struct FrameData
-            {
-                FrameData() :
-                    imageAvailable(nullptr), renderFinished(nullptr),
-                    fence(nullptr)
-                {};
-
-                vk::UniqueSemaphore imageAvailable;
-                vk::UniqueSemaphore renderFinished;
-                vk::UniqueFence fence;
-            };
-
-            static const size_t FrameCount = 2;
-
             Swapchain(Window& window, Pass& pass);
             ~Swapchain();
 
@@ -61,7 +47,6 @@ namespace Rendering
             const auto& getSwapchainImages() const {
                 return m_swapchainImages;
             }
-            const Image& getNextImage() const;
 
         protected:
 
@@ -70,16 +55,12 @@ namespace Rendering
             void createVulkanSwapchain(Window& window);
             void aquireSwapchainImages();
             void createFramebuffers();
-            void createFrameData();
 
             vk::SurfaceFormatKHR m_surfaceFormat;
             vk::Extent2D m_swapchainExtents;
             vk::UniqueSwapchainKHR m_swapchain;
             std::vector<Image> m_swapchainImages;
-
-            // TODO: move frame data elsewhere?
-            size_t m_currentFrame = 0;
-            std::array<FrameData, FrameCount> m_frameData;
+            
 
             // Store reference to render pass in case we need to
             // recreate the swapchain

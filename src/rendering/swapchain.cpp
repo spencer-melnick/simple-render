@@ -21,23 +21,11 @@ namespace Rendering
         createVulkanSwapchain(window);
         aquireSwapchainImages();
         createFramebuffers();
-        createFrameData();
     }
 
     Swapchain::~Swapchain()
     {
         spdlog::info("Destroying swapchain");
-    }
-
-    const Swapchain::Image& Swapchain::getNextImage() const
-    {
-        const Swapchain::Image& currentImage = m_swapchainImages[m_currentFrame];
-
-        // Context::getVulkanDevice().acquireNextImageKHR(*m_swapchain,
-            // std::numeric_limits<uint64_t>::max, *currentImage.imageAvailable,
-            // nullptr);
-
-        return currentImage;
     }
 
 
@@ -160,10 +148,5 @@ namespace Rendering
 
             i.framebuffer = Context::getVulkanDevice().createFramebufferUnique(createInfo);
         }
-    }
-
-    void Swapchain::createFrameData()
-    {
-
     }
 }
