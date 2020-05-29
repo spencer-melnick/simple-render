@@ -30,24 +30,49 @@ namespace Rendering
 
 
 
-    const Swapchain::Image& Swapchain::getNextImage(const vk::Semaphore& semaphore)
+    Swapchain::ImageAquisitionResult Swapchain::getNextImage(const vk::Semaphore& semaphore)
     {
+        uint32_t swapchainImageIndex = 0;
+        bool shouldRecreateSwapchain = false;
+
         // Aquire the next swapchain image and signal semaphore
         // when it's ready
-        size_t swapchainImageIndex = static_cast<size_t>(
-            Rendering::Context::getVulkanDevice().acquireNextImageKHR(
+        try
+        {
+            auto result = Rendering::Context::getVulkanDevice().acquireNextImageKHR(
                 *m_swapchain,
                 (std::numeric_limits<uint64_t>::max)(),
                 semaphore,
                 nullptr
-            ).value);
+            );
+
+            swapchainImageIndex = static_cast<uint32_t>(result.value);
+
+            if (result.result == vk::Result::eSuboptimalKHR)
+            {
+                shouldRecreateSwapchain = true;
+            }
+        }
+        catch (const vk::OutOfDateKHRError&)
+        {
+            shouldRecreateSwapchain = true;
+        }
+
+        // Return an empty reference and an error code if the swapchain is out of date
+        // or suboptimal so we can recreate it
+        if (shouldRecreateSwapchain)
+        {
+            return std::make_tuple(Swapchain::ImageAquisitionError::ShouldRecreateSwapchain,
+                std::optional<std::reference_wrapper<const Swapchain::Image>>());
+        }
 
         if (swapchainImageIndex >= m_swapchainImages.size())
         {
             throw std::exception("Next available swapchain image is out of range");
         }
 
-        return m_swapchainImages[swapchainImageIndex];
+        return std::make_tuple(Swapchain::ImageAquisitionError::NoError,
+            std::cref(m_swapchainImages[swapchainImageIndex]));
     }
 
 

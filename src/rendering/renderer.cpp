@@ -44,7 +44,15 @@ namespace Rendering
         currentFrameData.commandBuffer->begin({vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
 
         // Aquire the next swapchain image
-        const Swapchain::Image& swapchainImage = swapchain.getNextImage(*currentFrameData.imageAvailable);
+        auto swapchainResult = swapchain.getNextImage(*currentFrameData.imageAvailable);
+        if (std::get<0>(swapchainResult) == Swapchain::ImageAquisitionError::ShouldRecreateSwapchain)
+        {
+            spdlog::info("Recreating swapchain");
+            // Do something here
+            throw std::exception("Failed to recreate swapchain");
+        }
+
+        const Swapchain::Image& swapchainImage = std::get<1>(swapchainResult)->get();
 
         // Run our main render pass
         vk::RenderPassBeginInfo renderPassInfo;
