@@ -33,12 +33,10 @@ class SimpleRenderApp
         ~SimpleRenderApp();
 
         void loop();
-        void render();
 
     private:
         // Initialization steps
         void initializeLogger();
-        void createFrameData();
 
 
         bool m_isRunning = false;
@@ -50,6 +48,5 @@ class SimpleRenderApp
         std::optional<Rendering::Pass> m_mainPass;
         std::optional<Rendering::Pipeline> m_mainPipeline;
         std::optional<Rendering::Swapchain> m_swapchain;
-        size_t m_currentFrame = 0;
-        std::array<FrameData, FrameCount> m_frameData;
+        std::optional<Rendering::Renderer> m_renderer;
 };

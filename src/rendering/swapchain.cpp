@@ -29,6 +29,30 @@ namespace Rendering
     }
 
 
+
+    const Swapchain::Image& Swapchain::getNextImage(const vk::Semaphore& semaphore)
+    {
+        // Aquire the next swapchain image and signal semaphore
+        // when it's ready
+        size_t swapchainImageIndex = static_cast<size_t>(
+            Rendering::Context::getVulkanDevice().acquireNextImageKHR(
+                *m_swapchain,
+                (std::numeric_limits<uint64_t>::max)(),
+                semaphore,
+                nullptr
+            ).value);
+
+        if (swapchainImageIndex >= m_swapchainImages.size())
+        {
+            throw std::exception("Next available swapchain image is out of range");
+        }
+
+        return m_swapchainImages[swapchainImageIndex];
+    }
+
+
+    // Initialization steps
+
     void Swapchain::createVulkanSwapchain(Window& window)
     {
         // Grab the first surface format
@@ -114,12 +138,13 @@ namespace Rendering
         auto swapchainImages = Context::getVulkanDevice().getSwapchainImagesKHR(m_swapchain.get());
 
         spdlog::info("Creating swapchain image views");
-        for (auto& i : swapchainImages)
+        for (size_t i = 0; i < swapchainImages.size(); i++)
         {
-            auto& imageWithView = m_swapchainImages.emplace_back(i);
+            vk::Image& image = swapchainImages[i];
+            auto& imageWithView = m_swapchainImages.emplace_back(image, static_cast<uint32_t>(i));
             
             vk::ImageViewCreateInfo createInfo;
-            createInfo.image = i;
+            createInfo.image = image;
             createInfo.viewType = vk::ImageViewType::e2D;
             createInfo.format = m_surfaceFormat.format;
             createInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;

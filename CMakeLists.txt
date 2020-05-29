@@ -45,14 +45,18 @@ endif()
 
 
 # Add sources
+# (These should probably be listed alphabetically, same as the file tree view
+# to make it easier to track which sources are added and which aren't)
 target_include_directories(simple-render PRIVATE src)
 target_sources(simple-render PRIVATE
 	src/rendering/commandbuffer.cpp
+	src/rendering/commands.cpp
 	src/rendering/device.cpp
 	src/rendering/context.cpp
 	src/rendering/instance.cpp
 	src/rendering/pass.cpp
 	src/rendering/pipeline.cpp
+	src/rendering/renderer.cpp
 	src/rendering/shader.cpp
 	src/rendering/swapchain.cpp
 	src/rendering/window.cpp

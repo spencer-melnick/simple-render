@@ -9,3 +9,5 @@
 #include "pass.hpp"
 #include "pipeline.hpp"
 #include "commandbuffer.hpp"
+#include "commands.hpp"
+#include "renderer.hpp"

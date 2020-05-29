@@ -22,13 +22,15 @@ namespace Rendering
         public:
             struct Image
             {
-                Image(vk::Image image) :
-                    image(image), imageView(nullptr), framebuffer(nullptr)
+                Image(vk::Image image, uint32_t index) :
+                    image(image), imageView(nullptr), framebuffer(nullptr),
+                    index(index)
                 {};
 
                 vk::Image image;
                 vk::UniqueImageView imageView;
                 vk::UniqueFramebuffer framebuffer;
+                uint32_t index;
             };
 
             Swapchain(Window& window, Pass& pass);
@@ -47,6 +49,10 @@ namespace Rendering
             const auto& getSwapchainImages() const {
                 return m_swapchainImages;
             }
+
+            // Returns the next image to be presented to in the swapchain
+            // and signals semaphore when it is available to be used
+            const Image& getNextImage(const vk::Semaphore& semaphore);
 
         protected:
 
